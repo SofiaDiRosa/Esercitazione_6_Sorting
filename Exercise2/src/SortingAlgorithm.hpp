@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <vector>
+#include <concepts>
 
 
 namespace SortLibrary {
@@ -15,67 +16,67 @@ concept Sortable = requires(T& t) {
 template<Sortable T>
 void BubbleSort(std::vector<T>& v)
 {
-	const unsigned int n = v.size();
+	size_t n = v.size();
+	bool swapped = true;
 	
-	for(unsigned int i = 0; i < n-1; i++)
-	{
-		for(unsigned int j = i+1; j < n; j++)
-		{	if(v[j] < v[i])
-			{
-				// swap(v[j], v[i]);
-				T tmp = v[j];
-				v[j] = v[i];
+	while(swapped) {
+		swapped = false;
+		for(size_t i = 1; i < n; i++){
+			if(v[i-1] > v[i]){
+				//swap(v[i-1], v[i]);
+				T tmp = v[i-1];
+				v[i-1] = v[i];
 				v[i] = tmp;
+				swapped = true;
 			}
 		}
+		n = n - 1;
 	}
 }
 
 
 template<Sortable T>
-void heap(std::vector<T>& arr, unsigned int n, int i)
+void heap(std::vector<T>& v, unsigned int n, unsigned int i)
 {
-	int radice = i; // posizione della radice
-	int sx = 2*i + 1; // posizione del figlio sinistro
-	int dx = 2*i + 2; // posizione del figlio destro
+	unsigned int radice = i; // posizione della radice
+	unsigned int sx = 2*i + 1; // posizione del figlio sinistro
+	unsigned int dx = 2*i + 2; // posizione del figlio destro
 	
 	// scambio in base alla priorità
-	if(sx < n && arr[sx] > arr[radice])
+	if(sx < n && v[sx] > v[radice])
 		radice = sx;
 	
-	if(dx < n && arr[dx] > arr[radice])
+	if(dx < n && v[dx] > v[radice])
 		radice = dx;
 	
 	if(radice != i)
 	{
-		//swap(arr[i], arr[radice]);
-		T tmp = arr[i];
-		arr[i] = arr[radice];
-		arr[radice] = tmp;
-		heap(arr, n, tmp);
+		//swap(v[i], v[radice]);
+		T tmp = v[i];
+		v[i] = v[radice];
+		v[radice] = tmp;
+		heap(v, n, radice);
 	}
 }
 
 template<Sortable T>
-void HeapSort(std::vector<T>& arr)
+void HeapSort(std::vector<T>& v)
 {
-	unsigned int n = arr.size();
+	const unsigned int n = v.size();
 	
 	// costruisco l'heaptree
-	for(unsigned int i = 0; i < (n/2 - 1); i--)
-		heap(arr, n, i);
+	for(int i = (n/2 - 1); i >= 0; i--)
+		heap(v, n, i);
 	
 	// estraggo ogni elemento dell'heaptree
-	for(unsigned int i = 0; i < (n-1); i--)
+	for(int i = n-1; i > 0; i--)
 	{
-		//swap(arr[0], arr[i]);
-		T tmp = arr[0];
-		arr[0] = arr[i];
-		arr[i] = tmp;
-		heap(arr, i, 0);
+		//swap(v[0], v[i]);
+		T tmp = v[0];
+		v[0] = v[i];
+		v[i] = tmp;
+		heap(v, i, 0);
 	}
 }
 
 }
-
-
